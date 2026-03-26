@@ -8,7 +8,7 @@
   <meta property="og:title" content="Kubernetes Services — Cloud Native Solutions" />
   <meta property="og:description" content="We deploy, operate, and scale production Kubernetes clusters. On any cloud or bare metal." />
   <meta property="og:url" content="https://k8s.services" />
-  <link rel="icon" type="image/png" href="static/images/cns-logo.png" />
+  <link rel="icon" type="image/svg+xml" href="https://raw.githubusercontent.com/cncf/artwork/main/projects/kubernetes/icon/color/kubernetes-icon-color.svg" />
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -152,8 +152,8 @@
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
         <a href="/" class="flex items-center gap-3">
-          <img src="static/images/cns-logo.png" alt="CNS Logo" class="h-8 w-auto" onerror="this.style.display='none'" />
-          <span class="font-bold text-lg dark:text-white text-gray-900">k8s.services</span>
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/kubernetes/icon/color/kubernetes-icon-color.svg" alt="Kubernetes" class="h-8 w-8" />
+          <span class="font-bold text-lg dark:text-white text-gray-900">k8s<span class="text-cncf-blue">.services</span></span>
         </a>
 
         <!-- Nav Links (desktop) -->
@@ -207,7 +207,8 @@
     </div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-      <div class="max-w-4xl">
+      <div class="flex flex-col lg:flex-row items-center gap-16">
+      <div class="max-w-4xl flex-1">
         <!-- Badge -->
         <div class="fade-in inline-flex items-center gap-2 px-4 py-2 rounded-full dark:bg-blue-950/50 bg-blue-50 border dark:border-blue-800/50 border-blue-200 text-cncf-blue text-sm font-medium mb-8">
           <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/kubernetes/icon/color/kubernetes-icon-color.svg" alt="K8s" class="w-4 h-4" />
@@ -236,6 +237,11 @@
             Our Services
           </a>
         </div>
+      </div>
+      <!-- Hero K8s Logo -->
+      <div class="fade-in fade-in-delay-3 hidden lg:flex flex-shrink-0 items-center justify-center">
+        <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/kubernetes/icon/color/kubernetes-icon-color.svg" alt="Kubernetes" class="w-64 h-64 opacity-90 drop-shadow-2xl" />
+      </div>
       </div>
     </div>
 
@@ -310,7 +316,7 @@
         <!-- Card 2: Managed Operations -->
         <div class="fade-in fade-in-delay-1 card-hover dark:bg-gray-900 bg-gray-50 rounded-2xl p-8 border dark:border-gray-800 border-gray-200">
           <div class="w-12 h-12 mb-6 flex items-center justify-center">
-            <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/cilium/icon/color/cilium-icon-color.svg" alt="Operations" class="w-10 h-10" />
+            <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/cilium/icon/color-dark/cilium-icon-color-dark.svg" alt="Operations" class="w-10 h-10" />
           </div>
           <h3 class="text-xl font-bold dark:text-white text-gray-900 mb-3">Managed Operations</h3>
           <p class="dark:text-gray-400 text-gray-500 leading-relaxed">
@@ -343,7 +349,7 @@
         <!-- Card 5: Migration -->
         <div class="fade-in fade-in-delay-4 card-hover dark:bg-gray-900 bg-gray-50 rounded-2xl p-8 border dark:border-gray-800 border-gray-200">
           <div class="w-12 h-12 mb-6 flex items-center justify-center">
-            <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/tinkerbell/icon/color/tinkerbell-icon-color.svg" alt="Tinkerbell" class="w-10 h-10" />
+            <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/tinkerbell/icon/color-dark/tinkerbell-icon-color-dark.svg" alt="Tinkerbell" class="w-10 h-10" />
           </div>
           <h3 class="text-xl font-bold dark:text-white text-gray-900 mb-3">Migration &amp; Modernization</h3>
           <p class="dark:text-gray-400 text-gray-500 leading-relaxed">
@@ -400,7 +406,7 @@
         </div>
 
         <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
-          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/cilium/icon/color/cilium-icon-color.svg" alt="Cilium" class="w-6 h-6" />
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/cilium/icon/color-dark/cilium-icon-color-dark.svg" alt="Cilium" class="w-6 h-6" />
           Cilium
         </div>
 
@@ -440,7 +446,7 @@
         </div>
 
         <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
-          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/tinkerbell/icon/color/tinkerbell-icon-color.svg" alt="Tinkerbell" class="w-6 h-6" />
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/tinkerbell/icon/color-dark/tinkerbell-icon-color-dark.svg" alt="Tinkerbell" class="w-6 h-6" />
           Tinkerbell
         </div>
 
