@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kubernetes Services — Cloud Native Solutions</title>
+  <meta name="description" content="We deploy, operate, and scale production Kubernetes clusters. On any cloud or bare metal." />
+  <meta property="og:title" content="Kubernetes Services — Cloud Native Solutions" />
+  <meta property="og:description" content="We deploy, operate, and scale production Kubernetes clusters. On any cloud or bare metal." />
+  <meta property="og:url" content="https://k8s.services" />
+  <link rel="icon" type="image/png" href="static/images/cns-logo.png" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cncf: {
+              blue: '#0086FF',
+              turquoise: '#93EAFF',
+              pink: '#D62293',
+              stone: '#E5E5E5',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    * { font-family: 'Inter', system-ui, sans-serif; }
+    html { scroll-behavior: smooth; }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #0086FF 0%, #93EAFF 50%, #D62293 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Hero background */
+    .hero-bg {
+      background: radial-gradient(ellipse at 20% 50%, rgba(0,134,255,0.12) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 20%, rgba(214,34,147,0.08) 0%, transparent 50%),
+                  radial-gradient(ellipse at 60% 80%, rgba(147,234,255,0.06) 0%, transparent 50%);
+    }
+
+    /* Grid pattern overlay */
+    .grid-pattern {
+      background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+
+    /* Card hover glow */
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,134,255,0.15);
+    }
+
+    /* Scroll animation */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-in-delay-1 { transition-delay: 0.1s; }
+    .fade-in-delay-2 { transition-delay: 0.2s; }
+    .fade-in-delay-3 { transition-delay: 0.3s; }
+    .fade-in-delay-4 { transition-delay: 0.4s; }
+    .fade-in-delay-5 { transition-delay: 0.5s; }
+    .fade-in-delay-6 { transition-delay: 0.6s; }
+
+    /* Navbar scroll effect */
+    .navbar-scrolled {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    /* Tech tag */
+    .tech-tag {
+      transition: all 0.2s ease;
+    }
+    .tech-tag:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,134,255,0.2);
+    }
+
+    /* Stat card glow */
+    .stat-glow {
+      box-shadow: 0 0 30px rgba(0,134,255,0.1);
+    }
+
+    /* Form input dark */
+    .dark .form-input {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.1);
+      color: white;
+    }
+    .dark .form-input:focus {
+      border-color: #0086FF;
+      box-shadow: 0 0 0 3px rgba(0,134,255,0.15);
+      outline: none;
+    }
+    .form-input {
+      background: rgba(0,0,0,0.04);
+      border-color: rgba(0,0,0,0.1);
+    }
+    .form-input:focus {
+      border-color: #0086FF;
+      box-shadow: 0 0 0 3px rgba(0,134,255,0.1);
+      outline: none;
+    }
+
+    /* Glow button */
+    .btn-primary {
+      background: linear-gradient(135deg, #0086FF, #0066cc);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,134,255,0.3);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 8px 25px rgba(0,134,255,0.5);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+
+<body class="dark:bg-gray-950 bg-white dark:text-white text-gray-900 transition-colors duration-300">
+
+  <!-- ======== NAVBAR ======== -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-3">
+          <img src="static/images/cns-logo.png" alt="CNS Logo" class="h-8 w-auto" onerror="this.style.display='none'" />
+          <span class="font-bold text-lg dark:text-white text-gray-900">k8s.services</span>
+        </a>
+
+        <!-- Nav Links (desktop) -->
+        <div class="hidden md:flex items-center gap-6">
+          <a href="#services" class="dark:text-gray-300 text-gray-600 hover:text-cncf-blue transition-colors text-sm font-medium">Services</a>
+          <a href="#stack" class="dark:text-gray-300 text-gray-600 hover:text-cncf-blue transition-colors text-sm font-medium">Tech Stack</a>
+          <a href="https://cloudnativesolutions.ro" target="_blank" class="dark:text-gray-300 text-gray-600 hover:text-cncf-blue transition-colors text-sm font-medium">About Us</a>
+          <a href="#contact" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-semibold">Contact Us</a>
+        </div>
+
+        <!-- Right controls -->
+        <div class="flex items-center gap-3">
+          <!-- Theme toggle -->
+          <button id="themeToggle" class="p-2 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-300 text-gray-600 hover:text-cncf-blue transition-all" aria-label="Toggle theme">
+            <!-- Sun icon -->
+            <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+            </svg>
+            <!-- Moon icon -->
+            <svg id="moonIcon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+          </button>
+
+          <!-- Mobile menu button -->
+          <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-300 text-gray-600">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="md:hidden hidden dark:bg-gray-900 bg-white border-t dark:border-gray-800 border-gray-200 px-4 py-4 space-y-3">
+      <a href="#services" class="block dark:text-gray-300 text-gray-600 hover:text-cncf-blue py-2 text-sm font-medium">Services</a>
+      <a href="#stack" class="block dark:text-gray-300 text-gray-600 hover:text-cncf-blue py-2 text-sm font-medium">Tech Stack</a>
+      <a href="https://cloudnativesolutions.ro" target="_blank" class="block dark:text-gray-300 text-gray-600 hover:text-cncf-blue py-2 text-sm font-medium">About Us</a>
+      <a href="#contact" class="block btn-primary text-white text-center px-4 py-2 rounded-lg text-sm font-semibold">Contact Us</a>
+    </div>
+  </nav>
+
+  <!-- ======== HERO ======== -->
+  <section class="relative min-h-screen flex items-center hero-bg grid-pattern overflow-hidden">
+    <!-- Animated background blobs -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full opacity-10 animate-pulse" style="background: radial-gradient(circle, #0086FF, transparent); animation-duration: 4s;"></div>
+      <div class="absolute top-1/3 -right-32 w-80 h-80 rounded-full opacity-8 animate-pulse" style="background: radial-gradient(circle, #D62293, transparent); animation-duration: 6s;"></div>
+      <div class="absolute bottom-20 left-1/3 w-64 h-64 rounded-full opacity-6 animate-pulse" style="background: radial-gradient(circle, #93EAFF, transparent); animation-duration: 5s;"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+      <div class="max-w-4xl">
+        <!-- Badge -->
+        <div class="fade-in inline-flex items-center gap-2 px-4 py-2 rounded-full dark:bg-blue-950/50 bg-blue-50 border dark:border-blue-800/50 border-blue-200 text-cncf-blue text-sm font-medium mb-8">
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/kubernetes/icon/color/kubernetes-icon-color.svg" alt="K8s" class="w-4 h-4" />
+          Cloud Native Solutions — Kubernetes Experts
+        </div>
+
+        <!-- Title -->
+        <h1 class="fade-in fade-in-delay-1 text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mb-6">
+          <span class="gradient-text">Kubernetes</span>
+          <br />
+          <span class="dark:text-white text-gray-900">Services</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="fade-in fade-in-delay-2 text-xl sm:text-2xl dark:text-gray-300 text-gray-600 leading-relaxed mb-10 max-w-2xl">
+          We deploy, operate, and scale production Kubernetes clusters.
+          On any cloud or bare metal.
+        </p>
+
+        <!-- CTAs -->
+        <div class="fade-in fade-in-delay-3 flex flex-col sm:flex-row gap-4">
+          <a href="#contact" class="btn-primary text-white px-8 py-4 rounded-xl text-lg font-semibold text-center">
+            Get Started →
+          </a>
+          <a href="#services" class="px-8 py-4 rounded-xl text-lg font-semibold dark:bg-gray-800 bg-gray-100 dark:text-white text-gray-900 dark:hover:bg-gray-700 hover:bg-gray-200 transition-colors text-center">
+            Our Services
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+      <svg class="w-6 h-6 dark:text-gray-500 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ======== STATS / WHY US ======== -->
+  <section class="py-20 dark:bg-gray-900 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div class="fade-in stat-glow dark:bg-gray-800 bg-white rounded-2xl p-8 text-center border dark:border-gray-700 border-gray-200">
+          <div class="text-4xl font-black gradient-text mb-2">10+</div>
+          <div class="text-sm dark:text-gray-400 text-gray-500 font-medium">Years Cloud Native Experience</div>
+        </div>
+
+        <div class="fade-in fade-in-delay-1 stat-glow dark:bg-gray-800 bg-white rounded-2xl p-8 text-center border dark:border-gray-700 border-gray-200">
+          <div class="text-4xl font-black gradient-text mb-2">84+</div>
+          <div class="text-sm dark:text-gray-400 text-gray-500 font-medium">Apps Running on Our Platform</div>
+        </div>
+
+        <div class="fade-in fade-in-delay-2 stat-glow dark:bg-gray-800 bg-white rounded-2xl p-8 text-center border dark:border-gray-700 border-gray-200">
+          <div class="text-4xl font-black gradient-text mb-2">99.99%</div>
+          <div class="text-sm dark:text-gray-400 text-gray-500 font-medium">Uptime SLA</div>
+        </div>
+
+        <div class="fade-in fade-in-delay-3 stat-glow dark:bg-gray-800 bg-white rounded-2xl p-8 text-center border dark:border-gray-700 border-gray-200">
+          <div class="text-4xl font-black gradient-text mb-2">3+</div>
+          <div class="text-sm dark:text-gray-400 text-gray-500 font-medium">Clouds + Bare Metal</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== SERVICES ======== -->
+  <section id="services" class="py-24 dark:bg-gray-950 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Section header -->
+      <div class="text-center mb-16 fade-in">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full dark:bg-blue-950/50 bg-blue-50 border dark:border-blue-800/50 border-blue-200 text-cncf-blue text-sm font-medium mb-4">
+          Services
+        </div>
+        <h2 class="text-4xl lg:text-5xl font-black dark:text-white text-gray-900 mb-4">
+          Everything your <span class="gradient-text">K8s platform</span> needs
+        </h2>
+        <p class="text-lg dark:text-gray-400 text-gray-500 max-w-2xl mx-auto">
+          From initial cluster setup to ongoing operations — we handle the full Kubernetes lifecycle.
+        </p>
+      </div>
+
+      <!-- Service cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Card 1: Cluster Deployment -->
+        <div class="fade-in card-hover dark:bg-gray-900 bg-gray-50 rounded-2xl p-8 border dark:border-gray-800 border-gray-200">
+          <div class="w-12 h-12 mb-6 flex items-center justify-center">
+            <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/kubernetes/icon/color/kubernetes-icon-color.svg" alt="Kubernetes" class="w-10 h-10" />
+          </div>
+          <h3 class="text-xl font-bold dark:text-white text-gray-900 mb-3">Cluster Deployment</h3>
+          <p class="dark:text-gray-400 text-gray-500 leading-relaxed">
+            Production-grade K8s clusters on AWS, GCP, Azure, or bare metal. Hardened, optimized, ready for workloads.
+          </p>
+        </div>
+
+        <!-- Card 2: Managed Operations -->
+        <div class="fade-in fade-in-delay-1 card-hover dark:bg-gray-900 bg-gray-50 rounded-2xl p-8 border dark:border-gray-800 border-gray-200">
+          <div class="w-12 h-12 mb-6 flex items-center justify-center">
+            <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/cilium/icon/color/cilium-icon-color.svg" alt="Operations" class="w-10 h-10" />
+          </div>
+          <h3 class="text-xl font-bold dark:text-white text-gray-900 mb-3">Managed Operations</h3>
+          <p class="dark:text-gray-400 text-gray-500 leading-relaxed">
+            24/7 monitoring, upgrades, patching, and incident response. We keep your clusters healthy so you can focus on shipping.
+          </p>
+        </div>
+
+        <!-- Card 3: GitOps & CI/CD -->
+        <div class="fade-in fade-in-delay-2 card-hover dark:bg-gray-900 bg-gray-50 rounded-2xl p-8 border dark:border-gray-800 border-gray-200">
+          <div class="w-12 h-12 mb-6 flex items-center justify-center">
+            <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/argo/icon/color/argo-icon-color.svg" alt="ArgoCD" class="w-10 h-10" />
+          </div>
+          <h3 class="text-xl font-bold dark:text-white text-gray-900 mb-3">GitOps &amp; CI/CD</h3>
+          <p class="dark:text-gray-400 text-gray-500 leading-relaxed">
+            ArgoCD, Kargo, and automated pipelines. Every deployment tracked, every change auditable, every rollback instant.
+          </p>
+        </div>
+
+        <!-- Card 4: Platform Engineering -->
+        <div class="fade-in fade-in-delay-3 card-hover dark:bg-gray-900 bg-gray-50 rounded-2xl p-8 border dark:border-gray-800 border-gray-200">
+          <div class="w-12 h-12 mb-6 flex items-center justify-center">
+            <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/helm/icon/color/helm-icon-color.svg" alt="Helm" class="w-10 h-10" />
+          </div>
+          <h3 class="text-xl font-bold dark:text-white text-gray-900 mb-3">Platform Engineering</h3>
+          <p class="dark:text-gray-400 text-gray-500 leading-relaxed">
+            Internal developer platforms built on Kubernetes. Self-service namespaces, RBAC, quotas, and golden paths.
+          </p>
+        </div>
+
+        <!-- Card 5: Migration -->
+        <div class="fade-in fade-in-delay-4 card-hover dark:bg-gray-900 bg-gray-50 rounded-2xl p-8 border dark:border-gray-800 border-gray-200">
+          <div class="w-12 h-12 mb-6 flex items-center justify-center">
+            <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/tinkerbell/icon/color/tinkerbell-icon-color.svg" alt="Tinkerbell" class="w-10 h-10" />
+          </div>
+          <h3 class="text-xl font-bold dark:text-white text-gray-900 mb-3">Migration &amp; Modernization</h3>
+          <p class="dark:text-gray-400 text-gray-500 leading-relaxed">
+            Move from VMs, Docker Compose, or legacy infra to Kubernetes. Zero-downtime migrations with battle-tested patterns.
+          </p>
+        </div>
+
+        <!-- Card 6: Security -->
+        <div class="fade-in fade-in-delay-5 card-hover dark:bg-gray-900 bg-gray-50 rounded-2xl p-8 border dark:border-gray-800 border-gray-200">
+          <div class="w-12 h-12 mb-6 flex items-center justify-center">
+            <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/harbor/icon/color/harbor-icon-color.svg" alt="Harbor" class="w-10 h-10" />
+          </div>
+          <h3 class="text-xl font-bold dark:text-white text-gray-900 mb-3">Security &amp; Compliance</h3>
+          <p class="dark:text-gray-400 text-gray-500 leading-relaxed">
+            Network policies, pod security, OPA/Gatekeeper, cert-manager, Vault integration. SOC2 and GDPR ready.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== TECH STACK ======== -->
+  <section id="stack" class="py-24 dark:bg-gray-900 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="text-center mb-16 fade-in">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full dark:bg-blue-950/50 bg-blue-50 border dark:border-blue-800/50 border-blue-200 text-cncf-blue text-sm font-medium mb-4">
+          Tech Stack
+        </div>
+        <h2 class="text-4xl lg:text-5xl font-black dark:text-white text-gray-900 mb-4">
+          Built on <span class="gradient-text">CNCF projects</span>
+        </h2>
+        <p class="text-lg dark:text-gray-400 text-gray-500 max-w-2xl mx-auto">
+          We use and contribute to the cloud native ecosystem. Battle-tested open source tools you can trust.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-4 fade-in">
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/kubernetes/icon/color/kubernetes-icon-color.svg" alt="Kubernetes" class="w-6 h-6" />
+          Kubernetes
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/argo/icon/color/argo-icon-color.svg" alt="ArgoCD" class="w-6 h-6" />
+          ArgoCD
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/istio/icon/color/istio-icon-color.svg" alt="Istio" class="w-6 h-6" />
+          Istio
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/cilium/icon/color/cilium-icon-color.svg" alt="Cilium" class="w-6 h-6" />
+          Cilium
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/helm/icon/color/helm-icon-color.svg" alt="Helm" class="w-6 h-6" />
+          Helm
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <span class="text-xl">🌍</span>
+          Terraform
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <span class="text-xl">🔐</span>
+          Vault
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <span class="text-xl">🔑</span>
+          Keycloak
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <img src="https://raw.githubusercontent.com/grafana/grafana/main/public/img/grafana_icon.svg" alt="Grafana" class="w-6 h-6" />
+          Grafana
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/kubevirt/icon/color/kubevirt-icon-color.svg" alt="KubeVirt" class="w-6 h-6" />
+          KubeVirt
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <span class="text-xl">☸️</span>
+          Cluster API
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/tinkerbell/icon/color/tinkerbell-icon-color.svg" alt="Tinkerbell" class="w-6 h-6" />
+          Tinkerbell
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <span class="text-xl">🚢</span>
+          Kargo
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/harbor/icon/color/harbor-icon-color.svg" alt="Harbor" class="w-6 h-6" />
+          Harbor
+        </div>
+
+        <div class="tech-tag flex items-center gap-3 dark:bg-gray-800 bg-white px-5 py-3 rounded-xl border dark:border-gray-700 border-gray-200 dark:text-white text-gray-800 font-medium">
+          <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/rook/icon/color/rook-icon-color.svg" alt="Rook" class="w-6 h-6" />
+          Rook-Ceph
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== CONTACT ======== -->
+  <section id="contact" class="py-24 dark:bg-gray-950 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+
+          <!-- Left: Contact info -->
+          <div class="fade-in">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full dark:bg-blue-950/50 bg-blue-50 border dark:border-blue-800/50 border-blue-200 text-cncf-blue text-sm font-medium mb-6">
+              Contact
+            </div>
+            <h2 class="text-4xl lg:text-5xl font-black dark:text-white text-gray-900 mb-6">
+              Let's talk <span class="gradient-text">Kubernetes</span>
+            </h2>
+            <p class="text-lg dark:text-gray-400 text-gray-500 leading-relaxed mb-10">
+              Tell us about your infrastructure needs. We'll help you design, deploy, and operate a Kubernetes platform that scales with your business.
+            </p>
+
+            <!-- Contact links -->
+            <div class="space-y-4">
+              <a href="mailto:hello@cloudnativesolutions.ro" class="flex items-center gap-4 group">
+                <div class="w-10 h-10 rounded-xl dark:bg-gray-800 bg-gray-100 flex items-center justify-center group-hover:bg-cncf-blue transition-colors">
+                  <svg class="w-5 h-5 dark:text-gray-400 text-gray-500 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+                <span class="dark:text-gray-300 text-gray-600 group-hover:text-cncf-blue transition-colors">hello@cloudnativesolutions.ro</span>
+              </a>
+
+              <a href="https://github.com/cloudnative-solutions" target="_blank" class="flex items-center gap-4 group">
+                <div class="w-10 h-10 rounded-xl dark:bg-gray-800 bg-gray-100 flex items-center justify-center group-hover:bg-cncf-blue transition-colors">
+                  <svg class="w-5 h-5 dark:text-gray-400 text-gray-500 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                </div>
+                <span class="dark:text-gray-300 text-gray-600 group-hover:text-cncf-blue transition-colors">github.com/cloudnative-solutions</span>
+              </a>
+
+              <a href="https://linkedin.com/company/cloudnative-solutions" target="_blank" class="flex items-center gap-4 group">
+                <div class="w-10 h-10 rounded-xl dark:bg-gray-800 bg-gray-100 flex items-center justify-center group-hover:bg-cncf-blue transition-colors">
+                  <svg class="w-5 h-5 dark:text-gray-400 text-gray-500 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </div>
+                <span class="dark:text-gray-300 text-gray-600 group-hover:text-cncf-blue transition-colors">linkedin.com/company/cloudnative-solutions</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Right: Contact form -->
+          <div class="fade-in fade-in-delay-2">
+            <form id="contactForm" action="https://formspree.io/f/xeqwqllj" method="POST" class="dark:bg-gray-900 bg-gray-50 rounded-2xl p-8 border dark:border-gray-800 border-gray-200 space-y-6">
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Name *</label>
+                  <input type="text" name="name" required placeholder="Jane Smith"
+                    class="form-input w-full px-4 py-3 rounded-xl border text-sm transition-all" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Email *</label>
+                  <input type="email" name="email" required placeholder="jane@company.io"
+                    class="form-input w-full px-4 py-3 rounded-xl border text-sm transition-all" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Company</label>
+                <input type="text" name="company" placeholder="Acme Corp"
+                  class="form-input w-full px-4 py-3 rounded-xl border text-sm transition-all" />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Message *</label>
+                <textarea name="message" required rows="4" placeholder="Tell us about your Kubernetes needs..."
+                  class="form-input w-full px-4 py-3 rounded-xl border text-sm transition-all resize-none"></textarea>
+              </div>
+
+              <button type="submit" class="btn-primary w-full text-white py-4 rounded-xl font-semibold text-base">
+                Send Message →
+              </button>
+
+              <div id="formSuccess" class="hidden text-center py-3 px-4 rounded-xl bg-green-900/30 text-green-400 text-sm border border-green-800/50">
+                ✓ Message sent! We'll get back to you soon.
+              </div>
+
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== FOOTER ======== -->
+  <footer class="dark:bg-gray-900 bg-gray-50 border-t dark:border-gray-800 border-gray-200 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+
+        <!-- Brand -->
+        <div>
+          <a href="/" class="flex items-center gap-3 mb-4">
+            <img src="static/images/cns-logo.png" alt="CNS Logo" class="h-8 w-auto" onerror="this.style.display='none'" />
+            <span class="font-bold text-lg dark:text-white text-gray-900">Cloud Native Solutions</span>
+          </a>
+          <p class="dark:text-gray-400 text-gray-500 text-sm leading-relaxed">
+            Production Kubernetes infrastructure for modern engineering teams.
+          </p>
+        </div>
+
+        <!-- Quick links -->
+        <div>
+          <h4 class="font-semibold dark:text-white text-gray-900 mb-4">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><a href="#services" class="dark:text-gray-400 text-gray-500 hover:text-cncf-blue transition-colors text-sm">Services</a></li>
+            <li><a href="#stack" class="dark:text-gray-400 text-gray-500 hover:text-cncf-blue transition-colors text-sm">Tech Stack</a></li>
+            <li><a href="https://cloudnativesolutions.ro" target="_blank" class="dark:text-gray-400 text-gray-500 hover:text-cncf-blue transition-colors text-sm">About Us</a></li>
+            <li><a href="#contact" class="dark:text-gray-400 text-gray-500 hover:text-cncf-blue transition-colors text-sm">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Social -->
+        <div>
+          <h4 class="font-semibold dark:text-white text-gray-900 mb-4">Follow Us</h4>
+          <div class="flex gap-3">
+            <a href="https://github.com/cloudnative-solutions" target="_blank" class="w-9 h-9 rounded-lg dark:bg-gray-800 bg-gray-200 flex items-center justify-center dark:text-gray-400 text-gray-500 hover:text-cncf-blue hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all" aria-label="GitHub">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+            </a>
+
+            <a href="https://linkedin.com/company/cloudnative-solutions" target="_blank" class="w-9 h-9 rounded-lg dark:bg-gray-800 bg-gray-200 flex items-center justify-center dark:text-gray-400 text-gray-500 hover:text-cncf-blue hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all" aria-label="LinkedIn">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+            </a>
+
+            <a href="https://twitter.com/CNS_RO" target="_blank" class="w-9 h-9 rounded-lg dark:bg-gray-800 bg-gray-200 flex items-center justify-center dark:text-gray-400 text-gray-500 hover:text-cncf-blue hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all" aria-label="Twitter">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+
+            <a href="https://cloudnativesolutions.ro" target="_blank" class="w-9 h-9 rounded-lg dark:bg-gray-800 bg-gray-200 flex items-center justify-center dark:text-gray-400 text-gray-500 hover:text-cncf-blue hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all" aria-label="Website">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="pt-8 border-t dark:border-gray-800 border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="dark:text-gray-500 text-gray-400 text-sm">
+          © 2025 Cloud Native Solutions. All rights reserved.
+        </p>
+        <p class="dark:text-gray-500 text-gray-400 text-sm">
+          Built with ☸️ and ❤️ in Romania
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======== SCRIPTS ======== -->
+  <script>
+    // ---- Theme toggle ----
+    const html = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const sunIcon = document.getElementById('sunIcon');
+    const moonIcon = document.getElementById('moonIcon');
+
+    function setTheme(dark) {
+      if (dark) {
+        html.classList.add('dark');
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        html.classList.remove('dark');
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    // Init from storage or default to dark
+    const stored = localStorage.getItem('theme');
+    setTheme(stored !== 'light');
+
+    themeToggle.addEventListener('click', () => {
+      setTheme(!html.classList.contains('dark'));
+    });
+
+    // ---- Mobile menu ----
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close mobile menu on nav link click
+    mobileMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+    });
+
+    // ---- Navbar scroll effect ----
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 20) {
+        navbar.classList.add('navbar-scrolled', 'dark:bg-gray-950/90', 'bg-white/90', 'shadow-lg', 'shadow-black/10');
+      } else {
+        navbar.classList.remove('navbar-scrolled', 'dark:bg-gray-950/90', 'bg-white/90', 'shadow-lg', 'shadow-black/10');
+      }
+    });
+
+    // ---- Scroll animations ----
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ---- Contact form ----
+    const form = document.getElementById('contactForm');
+    const formSuccess = document.getElementById('formSuccess');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+
+      try {
+        const data = new FormData(form);
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: data,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          form.reset();
+          formSuccess.classList.remove('hidden');
+          btn.textContent = 'Send Message →';
+          btn.disabled = false;
+          setTimeout(() => formSuccess.classList.add('hidden'), 5000);
+        } else {
+          throw new Error('Form submission failed');
+        }
+      } catch (err) {
+        btn.textContent = 'Send Message →';
+        btn.disabled = false;
+        alert('Something went wrong. Please try again or email us directly.');
+      }
+    });
+  </script>
+
+</body>
+</html>
